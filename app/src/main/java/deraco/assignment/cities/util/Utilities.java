@@ -69,6 +69,8 @@ public class Utilities {
 
     public static City[] filterCitiesByPrefix(City[] cities, String prefix) {
 
+        if (cities == null) return null;
+
         ArrayList<City> filteredCities = new ArrayList<>();
 
         for (City city : cities) {

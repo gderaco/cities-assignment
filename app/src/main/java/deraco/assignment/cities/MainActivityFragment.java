@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -17,22 +19,23 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import deraco.assignment.cities.model.City;
+import deraco.assignment.cities.util.CitiesLoader;
 import deraco.assignment.cities.util.ReadCitiesAsyncTask;
-import deraco.assignment.cities.util.Utilities;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<City[]> {
 
-    City[] cities;
-    Context mContext;
+    private City[] cities;
+    private Context mContext;
 
-    ProgressBar mProgressbar;
+    private ProgressBar mProgressbar;
 
     private RecyclerView mRecyclerView;
     private CityRecyclerViewAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+
+    private String filter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +63,12 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         mAdapter = new CityRecyclerViewAdapter(cities);
         mRecyclerView.setAdapter(mAdapter);
 
+        if (cities != null && cities.length > 0) //configuration change
+        {
+            mProgressbar.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+
         return mainView;
     }
 
@@ -81,20 +90,33 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        filterCities(query);
-        return false;
+        return true;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
         filterCities(query);
-        return false;
+        return true;
     }
 
     private void filterCities(String query) {
-        City[] filterCities = Utilities.filterCitiesByPrefix(this.cities, query);
-        mAdapter.setCities(filterCities);
+        filter = query;
+        getLoaderManager().restartLoader(0, null, this).forceLoad();
+    }
+
+    @NonNull
+    @Override
+    public Loader<City[]> onCreateLoader(int id, @Nullable Bundle args) {
+        return new CitiesLoader(getActivity(), cities, filter);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<City[]> loader, City[] filteredData) {
+        mAdapter.setCities(filteredData);
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onLoaderReset(@NonNull Loader<City[]> loader) {
+    }
 }
