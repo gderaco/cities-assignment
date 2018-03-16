@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +28,9 @@ public class MainActivityFragment extends Fragment {
 
     ProgressBar mProgressbar;
 
-    public MainActivityFragment() {
-    }
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,14 +48,26 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mProgressbar = mainView.findViewById(R.id.progressBar);
+        //mProgressbar = mainView.findViewById(R.id.progressBar);
+        mRecyclerView = (RecyclerView) mainView.findViewById(R.id.recyclerview);
+
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter (see also next example)
+        mAdapter = new MyAdapter(cities);
+        mRecyclerView.setAdapter(mAdapter);
 
         return mainView;
     }
 
     private void onObtainedCities(City[] cities) {
         this.cities = cities;
-        mProgressbar.setVisibility(View.GONE);
+        //mProgressbar.setVisibility(View.GONE);
+        mAdapter.notifyDataSetChanged();
     }
 
     //
