@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
@@ -29,7 +30,7 @@ public class MainActivityFragment extends Fragment {
     ProgressBar mProgressbar;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private CityRecyclerViewAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
@@ -58,7 +59,7 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(cities);
+        mAdapter = new CityRecyclerViewAdapter(cities);
         mRecyclerView.setAdapter(mAdapter);
 
         return mainView;
@@ -67,7 +68,11 @@ public class MainActivityFragment extends Fragment {
     private void onObtainedCities(City[] cities) {
         this.cities = cities;
         //mProgressbar.setVisibility(View.GONE);
+        mAdapter.setCities(cities);
         mAdapter.notifyDataSetChanged();
+
+
+        Toast.makeText(getActivity(), "onObtainedCities", Toast.LENGTH_LONG).show();
     }
 
     //
@@ -83,7 +88,12 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected City[] doInBackground(Void... voids) {
             AssetManager assets = activityWReference.get().getActivity().getAssets();
-            return Utilities.readCities(assets);
+            City[] cities = Utilities.readCities(assets);
+            if (cities != null) {
+
+            }
+
+            return cities;
         }
 
         @Override
