@@ -52,18 +52,21 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        //mProgressbar = mainView.findViewById(R.id.progressBar);
+        mProgressbar = mainView.findViewById(R.id.progressBar);
         mRecyclerView = (RecyclerView) mainView.findViewById(R.id.recyclerview);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mAdapter = new CityRecyclerViewAdapter(cities);
+        mRecyclerView.setAdapter(mAdapter);
+
         return mainView;
     }
 
     public void onObtainedCities(City[] cities) {
         this.cities = cities;
-        //mProgressbar.setVisibility(View.GONE);
-        mAdapter = new CityRecyclerViewAdapter(cities);
-        mRecyclerView.setAdapter(mAdapter);
+        mProgressbar.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         mAdapter.setCities(cities);
         mAdapter.notifyDataSetChanged();
     }
