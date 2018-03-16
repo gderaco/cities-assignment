@@ -25,7 +25,7 @@ import deraco.assignment.cities.util.ReadCitiesAsyncTask;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<City[]> {
+public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<City[]>, CityRecyclerViewAdapter.OnCityClickListener {
 
     private City[] cities;
     private Context mContext;
@@ -60,7 +60,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new CityRecyclerViewAdapter(cities);
+        mAdapter = new CityRecyclerViewAdapter(cities, this);
         mRecyclerView.setAdapter(mAdapter);
 
         if (cities != null && cities.length > 0) //configuration change
@@ -118,5 +118,14 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
 
     @Override
     public void onLoaderReset(@NonNull Loader<City[]> loader) {
+    }
+
+    @Override
+    public void onCityClick(City city) {
+
+        MapFragment mapFragment = new MapFragment();
+        mapFragment.setCity(city);
+        getFragmentManager().beginTransaction().add(R.id.fragment_frame_layout, mapFragment).addToBackStack(null).commit();
+
     }
 }

@@ -14,11 +14,23 @@ import deraco.assignment.cities.model.City;
  */
 
 public class CityRecyclerViewAdapter extends RecyclerView.Adapter<CityRecyclerViewAdapter.ViewHolder> {
+
+    interface OnCityClickListener {
+        void onCityClick(City city);
+    }
+
+    private City[] cities;
+    private OnCityClickListener onItemClickListener;
+
+    CityRecyclerViewAdapter(City[] cities, OnCityClickListener onClickListener) {
+        this.cities = cities;
+        this.onItemClickListener = onClickListener;
+    }
+
     void setCities(City[] cities) {
         this.cities = cities;
     }
 
-    private City[] cities;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView mTextView;
@@ -27,11 +39,17 @@ public class CityRecyclerViewAdapter extends RecyclerView.Adapter<CityRecyclerVi
             super(v);
             mTextView = itemView.findViewById(R.id.tv);
         }
+
+        void bind(final City city, final OnCityClickListener listener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onCityClick(city);
+                }
+            });
+        }
     }
 
-    CityRecyclerViewAdapter(City[] cities) {
-        this.cities = cities;
-    }
 
     @NonNull
     @Override
@@ -43,6 +61,7 @@ public class CityRecyclerViewAdapter extends RecyclerView.Adapter<CityRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.mTextView.setText(String.format("%s, %s", cities[position].getName(), cities[position].getCountry()));
+        holder.bind(cities[position], onItemClickListener);
     }
 
     @Override
