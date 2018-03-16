@@ -1,28 +1,29 @@
 package deraco.assignment.cities;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import java.lang.ref.WeakReference;
 
 import deraco.assignment.cities.model.City;
+import deraco.assignment.cities.util.ReadCitiesAsyncTask;
 import deraco.assignment.cities.util.Utilities;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     City[] cities;
     Context mContext;
@@ -39,67 +40,58 @@ public class MainActivityFragment extends Fragment {
         mContext = getActivity();
         this.setRetainInstance(true);
 
+        setHasOptionsMenu(true);
+
         //In order to provide a smooth experience for the user, it's wise to load the json file in a background thread
         ReadCitiesAsyncTask readCitiesAsyncTask = new ReadCitiesAsyncTask(this);
         readCitiesAsyncTask.execute();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_main, container, false);
 
         //mProgressbar = mainView.findViewById(R.id.progressBar);
         mRecyclerView = (RecyclerView) mainView.findViewById(R.id.recyclerview);
-
         mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // specify an adapter (see also next example)
-        mAdapter = new CityRecyclerViewAdapter(cities);
-        mRecyclerView.setAdapter(mAdapter);
-
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return mainView;
     }
 
-    private void onObtainedCities(City[] cities) {
+    public void onObtainedCities(City[] cities) {
         this.cities = cities;
         //mProgressbar.setVisibility(View.GONE);
+        mAdapter = new CityRecyclerViewAdapter(cities);
+        mRecyclerView.setAdapter(mAdapter);
         mAdapter.setCities(cities);
         mAdapter.notifyDataSetChanged();
-
-
-        Toast.makeText(getActivity(), "onObtainedCities", Toast.LENGTH_LONG).show();
     }
 
-    //
-
-    static private class ReadCitiesAsyncTask extends AsyncTask<Void, Void, City[]> {
-
-        WeakReference<MainActivityFragment> activityWReference;
-
-        ReadCitiesAsyncTask(MainActivityFragment activity) {
-            activityWReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected City[] doInBackground(Void... voids) {
-            AssetManager assets = activityWReference.get().getActivity().getAssets();
-            City[] cities = Utilities.readCities(assets);
-            if (cities != null) {
-
-            }
-
-            return cities;
-        }
-
-        @Override
-        protected void onPostExecute(City[] cities) {
-            super.onPostExecute(cities);
-            activityWReference.get().onObtainedCities(cities);
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
+        final MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setOnQueryTextListener(this);
     }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        filterCities(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        filterCities(query);
+        return false;
+    }
+
+    private void filterCities(String query) {
+        City[] filterCities = Utilities.filterCitiesByPrefix(this.cities, query);
+        mAdapter.setCities(filterCities);
+        mAdapter.notifyDataSetChanged();
+    }
+
 }

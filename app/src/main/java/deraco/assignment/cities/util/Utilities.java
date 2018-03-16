@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -64,5 +65,17 @@ public class Utilities {
             return cities;
         }
         return null;
+    }
+
+    public static City[] filterCitiesByPrefix(City[] cities, String prefix) {
+
+        ArrayList<City> filteredCities = new ArrayList<>();
+
+        for (City city : cities) {
+            if (city.getName().startsWith(prefix)) {
+                filteredCities.add(city);
+            }
+        }
+        return filteredCities.toArray(new City[filteredCities.size()]);
     }
 }
