@@ -32,5 +32,8 @@ public class ExampleInstrumentedTest {
         assertEquals(filteredCitiesByPrefix[0].getName(), "Montecatini");
         assertEquals(filteredCitiesByPrefix[1].getName(), "Montecatini Terme");
         assertEquals(filteredCitiesByPrefix[2].getName(), "Montecatini-Terme");
+
+        filteredCitiesByPrefix = Utilities.filterCitiesByPrefix(cities, "平仮名");
+        assertEquals(filteredCitiesByPrefix.length, 0);
     }
 }
