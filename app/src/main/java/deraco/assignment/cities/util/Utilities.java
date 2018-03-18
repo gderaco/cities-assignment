@@ -1,6 +1,7 @@
 package deraco.assignment.cities.util;
 
 import android.content.res.AssetManager;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -24,6 +25,7 @@ public class Utilities {
 
     private static String TAG = JsonParser.class.getSimpleName();
 
+    @WorkerThread
     public static City[] readCities(AssetManager assetManager) {
         InputStream is;
         StringBuilder total = null;
