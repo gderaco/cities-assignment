@@ -11,22 +11,18 @@ import deraco.assignment.cities.model.City;
  */
 
 public class CitiesLoader extends AsyncTaskLoader<City[]> {
-    private City[] cities;
-    private String filter;
+    private City[] mCities;
+    private String mFilter;
 
     public CitiesLoader(Context context, City[] cities, String filter) {
         super(context);
-        this.cities = cities;
-        this.filter = filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
+        this.mCities = cities;
+        this.mFilter = filter;
     }
 
     @Nullable
     @Override
     public City[] loadInBackground() {
-        return Utilities.filterCitiesByPrefix(cities, filter);
+        return Utilities.filterCitiesByPrefix(mCities, mFilter);
     }
 }

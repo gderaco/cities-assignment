@@ -14,21 +14,29 @@ import deraco.assignment.cities.model.City;
 
 public class ReadCitiesAsyncTask extends AsyncTask<Void, Void, City[]> {
 
-    private WeakReference<MainActivityFragment> activityWReference;
+    private WeakReference<MainActivityFragment> mActivityWReference;
 
     public ReadCitiesAsyncTask(MainActivityFragment activity) {
-        activityWReference = new WeakReference<>(activity);
+        mActivityWReference = new WeakReference<>(activity);
     }
 
     @Override
     protected City[] doInBackground(Void... voids) {
-        AssetManager assets = activityWReference.get().getActivity().getAssets();
-        return Utilities.readCities(assets);
+        MainActivityFragment mainActivityFragment = mActivityWReference.get();
+        if (mainActivityFragment != null) {
+
+            AssetManager assets = mainActivityFragment.getActivity().getAssets();
+            return Utilities.readCities(assets);
+        } else {
+            return null;
+        }
     }
 
     @Override
     protected void onPostExecute(City[] cities) {
         super.onPostExecute(cities);
-        activityWReference.get().onObtainedCities(cities);
+        MainActivityFragment mainActivityFragment = mActivityWReference.get();
+        if (mainActivityFragment != null)
+            mainActivityFragment.onObtainedCities(cities);
     }
 }

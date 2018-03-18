@@ -25,10 +25,10 @@ import deraco.assignment.cities.model.City;
  */
 public class MapFragment extends Fragment {
 
-    private City city;
+    private City mCity;
 
     public void setCity(City city) {
-        this.city = city;
+        this.mCity = city;
     }
 
     @Override
@@ -50,8 +50,8 @@ public class MapFragment extends Fragment {
 
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                LatLng coordinates = new LatLng(city.getCoord().getLat(), city.getCoord().getLon());
-                googleMap.addMarker(new MarkerOptions().position(coordinates).title(city.getName()));
+                LatLng coordinates = new LatLng(mCity.getCoord().getLat(), mCity.getCoord().getLon());
+                googleMap.addMarker(new MarkerOptions().position(coordinates).title(mCity.getName()));
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 15));
                 mapView.onResume();
             }

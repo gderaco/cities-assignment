@@ -1,6 +1,5 @@
 package deraco.assignment.cities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,20 +26,17 @@ import deraco.assignment.cities.util.ReadCitiesAsyncTask;
  */
 public class MainActivityFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<City[]>, CityRecyclerViewAdapter.OnCityClickListener {
 
-    private City[] cities;
-    private Context mContext;
-
+    private City[] mCities;
     private ProgressBar mProgressbar;
 
     private RecyclerView mRecyclerView;
     private CityRecyclerViewAdapter mAdapter;
 
-    private String filter;
+    private String mFilter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getActivity();
         this.setRetainInstance(true);
 
         setHasOptionsMenu(true);
@@ -60,10 +56,10 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new CityRecyclerViewAdapter(cities, this);
+        mAdapter = new CityRecyclerViewAdapter(mCities, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        if (cities != null && cities.length > 0) //configuration change
+        if (mCities != null && mCities.length > 0) //configuration change
         {
             mProgressbar.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
@@ -73,7 +69,7 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     }
 
     public void onObtainedCities(City[] cities) {
-        this.cities = cities;
+        this.mCities = cities;
         mProgressbar.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
         mAdapter.setCities(cities);
@@ -100,14 +96,14 @@ public class MainActivityFragment extends Fragment implements SearchView.OnQuery
     }
 
     private void filterCities(String query) {
-        filter = query;
+        mFilter = query;
         getLoaderManager().restartLoader(0, null, this).forceLoad();
     }
 
     @NonNull
     @Override
     public Loader<City[]> onCreateLoader(int id, @Nullable Bundle args) {
-        return new CitiesLoader(getActivity(), cities, filter);
+        return new CitiesLoader(getActivity(), mCities, mFilter);
     }
 
     @Override
